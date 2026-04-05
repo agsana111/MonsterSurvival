@@ -1,4 +1,4 @@
-<img width="565" height="997" alt="image" src="https://github.com/user-attachments/assets/e83841fb-84ef-4ee3-8fa7-1e1a51840756" /># MonsterSurvival
+# MonsterSurvival
 
 ## 1. 게임 컨셉
 
@@ -39,22 +39,22 @@
 
 ### 타이틀 화면
 * 첫 게임을 실행하면 타이틀 화면이 나타난다. 타이틀 화면에는 게임 로고와 Game Start 버튼, Game Exit 버튼 2개가 존재한다.
-* <img width="565" height="997" alt="image" src="https://github.com/user-attachments/assets/31f7f26d-4d0a-4179-9b1c-9835dcd94723" />
+<img width="400" height="700" alt="image" src="https://github.com/user-attachments/assets/31f7f26d-4d0a-4179-9b1c-9835dcd94723" />
 
 
 ### 인게임 화면
 * Game Start 버튼을 누르면 인게임 화면으로 전환된다.
-* <img width="533" height="1039" alt="image" src="https://github.com/user-attachments/assets/10eb48a8-4e00-4919-9b37-b9c05acec14a" />
+<img width="400" height="700" alt="image" src="https://github.com/user-attachments/assets/5512fca4-fe7e-4c4a-8c21-e69b8fe7e708" />
 
 
 ### 팝업 화면
 * 인게임 화면에서 적을 쓰러트려 레벨이 오르면 팝업 화면이 나타난다. 팝업화면은 무기를 선택하거나, 강화하면 종료되고 인게임 화면으로 돌아간다.
-* <img width="565" height="1039" alt="image" src="https://github.com/user-attachments/assets/6b67ce21-2620-4159-a353-c6bab656adf6" />
+<img width="400" height="700" alt="image" src="https://github.com/user-attachments/assets/318f40ef-34f7-4e51-8c0f-6374f11fe876" />
 
 
 ### 게임 오버 화면
 * 플레이어의 체력이 0이 되면 게임 오버 화면으로 전환되고 게임을 재시작하거나, 타이틀 화면으로 돌아간다.
-<img width="407" height="823" alt="image" src="https://github.com/user-attachments/assets/81fa2320-a76d-4701-b569-72f3fe210429" />
+<img width="400" height="700" alt="image" src="https://github.com/user-attachments/assets/81fa2320-a76d-4701-b569-72f3fe210429" />
 
 ---
 
