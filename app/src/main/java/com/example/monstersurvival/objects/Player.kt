@@ -1,0 +1,124 @@
+package com.example.monstersurvival.com.example.monstersurvival.objects
+
+import android.graphics.Canvas
+import android.graphics.RectF
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.AnimSprite
+import kr.ac.tukorea.ge.spgp2026.a2dg.objects.IBoxCollidable
+import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
+import com.example.monstersurvival.R
+
+class Player(private val gameContext: GameContext) : AnimSprite(gameContext, R.drawable.player_idle, 8f, 4), IBoxCollidable {
+    private val playerHeight = 250f
+    private val speed = 500f
+    var maxHp: Int = 100
+    var currentHp: Int = 100
+    var isDead: Boolean = false
+
+    var damageMultiplier: Float = 1.0f
+
+    enum class State { IDLE, WALK }
+    var state = State.IDLE
+
+    private var isFacingLeft = false
+    private var invincibleTimer = 0f
+    private val hitBox = RectF()
+
+    override val collisionRect: RectF
+        get() {
+
+            val marginX = dstRect.width() * 0.35f
+            val marginY = dstRect.height() * 0.35f
+
+            hitBox.set(
+                dstRect.left + marginX,
+                dstRect.top + marginY,
+                dstRect.right - marginX,
+                dstRect.bottom - marginY
+            )
+            return hitBox
+        }
+
+    override fun update(gctx: GameContext) {
+        super.update(gctx)
+        if (invincibleTimer > 0f) {
+            invincibleTimer -= gctx.frameTime
+        }
+    }
+
+    private fun setProperSize() {
+        // 전체 너비(1774)를 프레임 수(4)로 나눈 1프레임의 진짜 너비를 구함
+        val singleFrameWidth = bitmapWidth / frameCount.toFloat()
+
+        // 세로 크기(250f)를 기준으로 1프레임의 원래 비율에 맞춰 가로 크기 결정
+        this.height = 250f
+        this.width = this.height * (singleFrameWidth / bitmapHeight)
+
+        syncDstRect()
+    }
+
+    init {
+        setCenter(gameContext.metrics.width / 2f, gameContext.metrics.height / 2f)
+        setProperSize()
+    }
+
+
+    fun move(dx: Float, dy: Float, frameTime: Float) {
+        if (isDead) return
+
+        if (dx != 0f || dy != 0f) {
+            changeState(State.WALK)
+
+            if (dx < 0) {
+                isFacingLeft = true
+            } else if (dx > 0) {
+                isFacingLeft = false
+            }
+        } else {
+            changeState(State.IDLE)
+        }
+    }
+
+    private fun changeState(newState: State) {
+        if (state == newState) return
+        state = newState
+        when (state) {
+            State.IDLE -> {
+                this.bitmap = gameContext.res.getBitmap(R.drawable.player_idle)
+                this.frameCount = 4
+                this.fps = 8f
+            }
+            State.WALK -> {
+                this.bitmap = gameContext.res.getBitmap(R.drawable.player_walk)
+                this.frameCount = 4
+                this.fps = 8f
+            }
+        }
+        setProperSize()
+    }
+
+    fun takeDamage(damage: Int) {
+        if (isDead || invincibleTimer > 0f) return
+
+        currentHp -= damage
+        if (currentHp <= 0) {
+            currentHp = 0
+            isDead = true
+        } else {
+            invincibleTimer = 0.15f
+        }
+    }
+
+    override fun draw(canvas: Canvas) {
+
+        if (invincibleTimer > 0f && (invincibleTimer * 10).toInt() % 2 == 0) return
+
+        if (isFacingLeft) {
+            canvas.save()
+            canvas.scale(-1f, 1f, x, y)
+            super.draw(canvas)
+            canvas.restore()
+        } else {
+            super.draw(canvas)
+        }
+    }
+}

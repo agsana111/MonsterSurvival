@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_meadow"> <ImageView
+    android:id="@+id/ivLogo"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="60dp"
+    android:adjustViewBounds="true"
+    android:src="@drawable/game_logo" /> <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_below="@id/ivLogo"
+    android:layout_marginTop="150dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="220dp"
+        android:layout_height="65dp"
+        android:layout_marginBottom="15dp"
+        android:text="GAME START"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#000000"
+        android:background="@drawable/btn_selector"  android:stateListAnimator="@null"
+        /> <Button
+    android:id="@+id/btnExit"
+    android:layout_width="220dp"
+    android:layout_height="65dp"
+    android:text="EXIT"
+    android:textSize="18sp"
+    android:textColor="#FFFFFF"
+    android:backgroundTint="#000000"
+    android:background="@drawable/btn_selector"  android:stateListAnimator="@null"/> </LinearLayout>
+
+</RelativeLayout>
