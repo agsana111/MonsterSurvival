@@ -14,8 +14,13 @@ import com.example.monstersurvival.R
 import com.example.monstersurvival.com.example.monstersurvival.objects.InfiniteBackground
 import com.example.monstersurvival.com.example.monstersurvival.objects.Monster
 import com.example.monstersurvival.com.example.monstersurvival.objects.Player
-import com.example.monstersurvival.com.example.monstersurvival.objects.MonsterPool
 import com.example.monstersurvival.com.example.monstersurvival.objects.MonsterType
+import com.example.monstersurvival.objects.AutoProjectile
+import com.example.monstersurvival.objects.SlashProjectile
+import com.example.monstersurvival.objects.OrbitProjectile
+import com.example.monstersurvival.objects.WeaponAuto
+import com.example.monstersurvival.objects.WeaponOrbit
+import com.example.monstersurvival.objects.WeaponSlash
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.collidesWith
 
 class MainScene(gctx: GameContext) : Scene(gctx) {
@@ -44,15 +49,19 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         60f
     )
 
+
+
     init {
         world.add(background, Layer.BACKGROUND)
         world.add(player, Layer.PLAYER)
         world.add(joystick, Layer.UI)
     }
 
+    private val weapon1 = WeaponAuto(player)
+    private val weapon2 = WeaponSlash(player)
+    private val weapon3 = WeaponOrbit(player)
     private var worldX = 0f
     private var worldY = 0f
-
     private var playTime = 0f
     private var monsterSpawnTimer = 0f
 
@@ -78,6 +87,9 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         } else {
             player.move(0f, 0f, gctx.frameTime)
         }
+
+        player.worldX = worldX
+        player.worldY = worldY
         background.targetX = worldX
         background.targetY = worldY
 
@@ -165,6 +177,124 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             val maxResistanceForce = 350f * gctx.frameTime
             worldX += totalPlayerPushX * maxResistanceForce
             worldY += totalPlayerPushY * maxResistanceForce
+        }
+
+        weapon1.update(gctx, world)
+        weapon2.update(gctx, world)
+        weapon3.update(gctx, world)
+
+        // 충돌처리
+        world.forEachReversedAt(Layer.PROJECTILE) { proj ->
+            var projIsDead = false
+
+            when (proj) {
+                is AutoProjectile -> {
+                    proj.updateScreenPosition(worldX, worldY, screenCenterX, screenCenterY)
+                    projIsDead = proj.isDead
+                }
+                is SlashProjectile -> {
+                    proj.updateScreenPosition(worldX, worldY, screenCenterX, screenCenterY)
+                    projIsDead = proj.isDead
+                }
+                is OrbitProjectile -> {
+                    proj.updateScreenPosition(worldX, worldY, screenCenterX, screenCenterY)
+                    projIsDead = proj.isDead
+                }
+            }
+
+            if (projIsDead) {
+                world.remove(proj, Layer.PROJECTILE)
+            }
+        }
+
+        val projectiles = world.objectsAt(Layer.PROJECTILE)
+
+        for (i in 0 until monsterCount) {
+            val monster = monsters[i] as? Monster ?: continue
+            if (!monster.isAlive) continue
+
+            for (j in projectiles.indices) {
+                val proj = projectiles[j]
+
+                var isHit = false
+                var projDamage = 0
+                var knockX = 0f
+                var knockY = 0f
+                var baseKnockForce = 0f
+
+                when (proj) {
+                    // 1. 단일 투사체
+                    is AutoProjectile -> {
+                        if (!proj.isDead && monster.collidesWith(proj)) {
+                            isHit = true
+                            projDamage = proj.damage
+                            knockX = player.worldX; knockY = player.worldY
+                            baseKnockForce = 400f // 기본 넉백력
+                            proj.isDead = true // 관통 안 함
+                        }
+                    }
+                    // 2. 광역 베기
+                    is SlashProjectile -> {
+                        if (!proj.isDead && monster.collidesWith(proj) && !proj.hitList.contains(monster)) {
+                            isHit = true
+                            projDamage = proj.damage
+                            knockX = player.worldX; knockY = player.worldY
+                            baseKnockForce = 800f
+
+                            proj.hitList.add(monster) // 방명록에 이름 적기 (다단히트 방지)
+                        }
+                    }
+                    // 3. 궤도 회전 무기
+                    is OrbitProjectile -> {
+                        val lastHitTime = proj.lastHitTimeMap[monster] ?: -1f
+
+                        if (!proj.isDead && monster.collidesWith(proj) && (playTime - lastHitTime >= 0.2f)) {
+                            isHit = true
+                            projDamage = proj.damage
+                            knockX = proj.worldX; knockY = proj.worldY
+                            baseKnockForce = 600f
+
+                            proj.lastHitTimeMap[monster] = playTime
+                        }
+                    }
+                }
+
+
+                if (isHit) {
+                    val tookDamage = monster.takeDamage(projDamage)
+
+                    if (tookDamage) {
+                        // 1. 방향 벡터 계산
+                        var dx = monster.worldX - knockX
+                        var dy = monster.worldY - knockY
+                        val dist = kotlin.math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+
+                        if (dist > 0.1f) {
+                            dx /= dist
+                            dy /= dist
+                        } else {
+                            dx = 1f; dy = 1f
+                        }
+
+                        // 2. 체력 비례 넉백 공식 적용
+                        // 공식: 받은 데미지 비율(0.0 ~ 1.0) * 기본 넉백력
+                        val hpRatio = projDamage.toFloat() / monster.maxHp.toFloat()
+
+                        val finalKnockForce = baseKnockForce * hpRatio.coerceAtMost(1.0f)
+
+                        monster.worldX += dx * finalKnockForce
+                        monster.worldY += dy * finalKnockForce
+                    }
+                }
+            }
+        }
+
+        // 무조건 update 젤 뒤에 있어야함.
+        world.forEachReversedAt(Layer.MONSTER) { obj ->
+            val monster = obj as? Monster ?: return@forEachReversedAt
+            if (!monster.isAlive) {
+                world.remove(monster, Layer.MONSTER)
+            }
         }
     }
 

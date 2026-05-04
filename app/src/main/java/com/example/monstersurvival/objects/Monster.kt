@@ -54,9 +54,9 @@ class Monster(private val gameContext: GameContext) :
 
         var baseMaxHp = 10
         when (type) {
-            MonsterType.NORMAL -> { baseMaxHp = 20; speed = 150f }
-            MonsterType.FAST -> { baseMaxHp = 10; speed = 300f }
-            MonsterType.HEAVY -> { baseMaxHp = 60; speed = 80f }
+            MonsterType.NORMAL -> { baseMaxHp = 30; speed = 150f }
+            MonsterType.FAST -> { baseMaxHp = 15; speed = 300f }
+            MonsterType.HEAVY -> { baseMaxHp = 80; speed = 80f }
         }
 
         val hpMultiplier = 1.0f + (playTime * 0.01f)
@@ -73,13 +73,14 @@ class Monster(private val gameContext: GameContext) :
         syncDstRect()
     }
 
-    fun takeDamage(damage: Int) {
-        if (!isAlive) return
+    fun takeDamage(damage: Int): Boolean{
+        if (!isAlive) return false
         hp -= damage
         if (hp <= 0) {
             hp = 0
             isAlive = false
         }
+        return true
     }
 
     fun moveTowards(targetWorldX: Float, targetWorldY: Float, frameTime: Float) {

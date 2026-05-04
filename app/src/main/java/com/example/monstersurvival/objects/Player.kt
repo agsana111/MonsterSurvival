@@ -12,7 +12,13 @@ class Player(private val gameContext: GameContext) : AnimSprite(gameContext, R.d
     private val speed = 500f
     var maxHp: Int = 100
     var currentHp: Int = 100
+
+    var might: Float = 1.0f       // 공격력 증가
+    var area: Float = 1.0f        // 공격 범위/투사체 크기 증가
+    var cooldownReduction: Float = 0f // 쿨타임 감소
     var isDead: Boolean = false
+    var worldX: Float = 0f
+    var worldY: Float = 0f
 
     var damageMultiplier: Float = 1.0f
 
