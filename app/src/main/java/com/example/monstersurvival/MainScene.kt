@@ -294,6 +294,8 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             val monster = obj as? Monster ?: return@forEachReversedAt
             if (!monster.isAlive) {
                 world.remove(monster, Layer.MONSTER)
+                val expReward = (monster.maxHp * 0.5f).toInt().coerceAtLeast(10)
+                player.addExp(expReward)
             }
         }
     }

@@ -8,10 +8,15 @@ import kr.ac.tukorea.ge.spgp2026.a2dg.view.GameContext
 import com.example.monstersurvival.R
 
 class Player(private val gameContext: GameContext) : AnimSprite(gameContext, R.drawable.player_idle, 8f, 4), IBoxCollidable {
+
     private val playerHeight = 250f
     private val speed = 500f
     var maxHp: Int = 100
     var currentHp: Int = 100
+
+    var level = 1
+    var exp = 0
+    var maxExp = 100
 
     var might: Float = 1.0f       // 공격력 증가
     var area: Float = 1.0f        // 공격 범위/투사체 크기 증가
@@ -126,5 +131,22 @@ class Player(private val gameContext: GameContext) : AnimSprite(gameContext, R.d
         } else {
             super.draw(canvas)
         }
+    }
+
+    fun addExp(amount: Int) {
+        exp += amount
+
+        while (exp >= maxExp) {
+            exp -= maxExp
+            levelUp()
+        }
+    }
+
+    private fun levelUp() {
+        level++
+
+        maxExp = (maxExp * 1.2f).toInt() + 50
+
+        // TODO: 나중에 여기서 게임 일시 중지 후 강화 Scene을 위에 추가할예정
     }
 }

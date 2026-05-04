@@ -56,10 +56,10 @@ class Monster(private val gameContext: GameContext) :
         when (type) {
             MonsterType.NORMAL -> { baseMaxHp = 30; speed = 150f }
             MonsterType.FAST -> { baseMaxHp = 15; speed = 300f }
-            MonsterType.HEAVY -> { baseMaxHp = 80; speed = 80f }
+            MonsterType.HEAVY -> { baseMaxHp = 100; speed = 80f }
         }
 
-        val hpMultiplier = 1.0f + (playTime * 0.01f)
+        val hpMultiplier = 1.0f + ((playTime/30f) * 1.5f)
         this.maxHp = (baseMaxHp * hpMultiplier).toInt()
         this.hp = this.maxHp
 
