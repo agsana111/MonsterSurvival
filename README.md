@@ -132,6 +132,8 @@
   2. LevelUpScene은 게임을 정지시키고 바로 직전의 previousScene 위에 불투명 한 창을 띄워서 메인 화면을 비추면서 자연스러운 일시정지를 구현
   3. 유저가 선택지를 고르면 pop()을 호출하여 씬을 제거, 즉시 MainScene으로 복귀
 
+---
+
 ## 9. MainScene 핵심 Game Object
 
 ### Player
