@@ -18,6 +18,7 @@ import com.example.monstersurvival.com.example.monstersurvival.objects.MonsterTy
 import com.example.monstersurvival.objects.AutoProjectile
 import com.example.monstersurvival.objects.SlashProjectile
 import com.example.monstersurvival.objects.OrbitProjectile
+import com.example.monstersurvival.objects.PlayerHUD
 import com.example.monstersurvival.objects.WeaponAuto
 import com.example.monstersurvival.objects.WeaponOrbit
 import com.example.monstersurvival.objects.WeaponSlash
@@ -38,7 +39,10 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
     override val world = World(Layer.values)
     private val player = Player(gctx)
+    private val hud = PlayerHUD(gctx, player)
+
     private val background = InfiniteBackground(gctx, R.drawable.bg_meadow, 512f)
+
     private val joystick = JoyStick(
         gctx,
         R.drawable.joystick_bg,
@@ -55,6 +59,7 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
         world.add(background, Layer.BACKGROUND)
         world.add(player, Layer.PLAYER)
         world.add(joystick, Layer.UI)
+        world.add(hud, Layer.UI)
     }
 
     private val weapon1 = WeaponAuto(player)
