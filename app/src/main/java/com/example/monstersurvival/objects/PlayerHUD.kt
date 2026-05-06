@@ -16,7 +16,7 @@ class PlayerHUD(
 
     private val expGauge = Gauge(0.03f, Color.CYAN, Color.DKGRAY)
 
-    private val levelLabel = LabelUtil(50f, Color.WHITE, Paint.Align.LEFT)
+    private val levelLabel = LabelUtil(100f, Color.CYAN, Paint.Align.LEFT)
 
     override fun update(gctx: GameContext) {
     }
@@ -26,8 +26,8 @@ class PlayerHUD(
 
         val progress = player.exp.toFloat() / player.maxExp.toFloat()
 
-        expGauge.draw(canvas, 0f, 15f, screenWidth, progress)
+        expGauge.draw(canvas, 0f, 1700f, screenWidth, progress)
 
-        levelLabel.draw(canvas, "Lv. ${player.level}", 20f, 80f)
+        levelLabel.draw(canvas, "Lv. ${player.level}", 20f, 1650f)
     }
 }
