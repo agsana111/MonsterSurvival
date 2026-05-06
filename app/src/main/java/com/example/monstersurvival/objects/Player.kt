@@ -25,6 +25,13 @@ class Player(private val gameContext: GameContext) : AnimSprite(gameContext, R.d
     var worldX: Float = 0f
     var worldY: Float = 0f
 
+    var mightLevel = 0
+    var areaLevel = 0
+    var cooldownLevel = 0
+
+
+    var pendingLevelUps = 0
+
     var damageMultiplier: Float = 1.0f
 
     enum class State { IDLE, WALK }
@@ -144,9 +151,39 @@ class Player(private val gameContext: GameContext) : AnimSprite(gameContext, R.d
 
     private fun levelUp() {
         level++
-
         maxExp = (maxExp * 1.2f).toInt() + 50
-
+        pendingLevelUps++
         // TODO: 나중에 여기서 게임 일시 중지 후 강화 Scene을 위에 추가할예정
     }
+
+    // 1. 공격력 (Might)
+    fun getMightUpgradeTitle() = "공격력 증가 Lv.${mightLevel + 1}"
+    fun getMightUpgradeDesc() = "공격 피해량 +10%"
+    fun upgradeMight() {
+        if (mightLevel < 5) {
+            mightLevel++
+            might += 0.2f
+        }
+    }
+
+    // 2. 공격 범위 (Area)
+    fun getAreaUpgradeTitle() = "범위 증가 Lv.${areaLevel + 1}"
+    fun getAreaUpgradeDesc() = "공격 범위 증가 +10%"
+    fun upgradeArea() {
+        if (areaLevel < 5) {
+            areaLevel++
+            area += 0.2f
+        }
+    }
+
+    // 3. 쿨타임 감소 (Cooldown)
+    fun getCooldownUpgradeTitle() = "쿨타임 감소 Lv.${cooldownLevel + 1}"
+    fun getCooldownUpgradeDesc() = "쿨타임 감소 +10%"
+    fun upgradeCooldown() {
+        if (cooldownLevel < 5) {
+            cooldownLevel++
+            cooldownReduction += 0.1f
+        }
+    }
+
 }

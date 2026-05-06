@@ -1,7 +1,9 @@
 // MainScene.kt
 package com.example.monstersurvival.com.example.monstersurvival
 
+import android.graphics.Canvas
 import android.view.MotionEvent
+import com.example.monstersurvival.LevelUpScene
 import kr.ac.tukorea.ge.spgp2026.a2dg.objects.JoyStick
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.Scene
 import kr.ac.tukorea.ge.spgp2026.a2dg.scene.World
@@ -11,6 +13,8 @@ import kotlin.math.sin
 import kotlin.random.Random
 import kotlin.math.PI
 import com.example.monstersurvival.R
+import com.example.monstersurvival.UpgradeOption
+import com.example.monstersurvival.UpgradeType
 import com.example.monstersurvival.com.example.monstersurvival.objects.InfiniteBackground
 import com.example.monstersurvival.com.example.monstersurvival.objects.Monster
 import com.example.monstersurvival.com.example.monstersurvival.objects.Player
@@ -40,7 +44,6 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
     override val world = World(Layer.values)
     private val player = Player(gctx)
     private val hud = PlayerHUD(gctx, player)
-
     private val background = InfiniteBackground(gctx, R.drawable.bg_meadow, 512f)
 
     private val joystick = JoyStick(
@@ -294,6 +297,11 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
             }
         }
 
+        if (player.pendingLevelUps > 0) {
+            player.pendingLevelUps--
+            showLevelUpScene()
+        }
+
         // 무조건 update 젤 뒤에 있어야함.
         world.forEachReversedAt(Layer.MONSTER) { obj ->
             val monster = obj as? Monster ?: return@forEachReversedAt
@@ -326,5 +334,44 @@ class MainScene(gctx: GameContext) : Scene(gctx) {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return joystick.onTouchEvent(event)
+    }
+
+    private fun showLevelUpScene() {
+        val available = mutableListOf<UpgradeOption>()
+
+        if (weapon1.level < 5) available.add(UpgradeOption(UpgradeType.WEAPON_AUTO, weapon1.getNextUpgradeTitle(), weapon1.getNextUpgradeDesc()))
+        if (weapon2.level < 5) available.add(UpgradeOption(UpgradeType.WEAPON_SLASH, weapon2.getNextUpgradeTitle(), weapon2.getNextUpgradeDesc()))
+        if (weapon3.level < 5) available.add(UpgradeOption(UpgradeType.WEAPON_ORBIT, weapon3.getNextUpgradeTitle(), weapon3.getNextUpgradeDesc()))
+
+        if (player.mightLevel < 5) available.add(UpgradeOption(UpgradeType.STAT_MIGHT, player.getMightUpgradeTitle(), player.getMightUpgradeDesc()))
+        if (player.areaLevel < 5) available.add(UpgradeOption(UpgradeType.STAT_AREA, player.getAreaUpgradeTitle(), player.getAreaUpgradeDesc()))
+        if (player.cooldownLevel < 5) available.add(UpgradeOption(UpgradeType.STAT_COOLDOWN, player.getCooldownUpgradeTitle(), player.getCooldownUpgradeDesc()))
+
+        available.shuffle()
+        val choices = available.take(3).toMutableList()
+
+        while (choices.size < 3) {
+            choices.add(UpgradeOption(UpgradeType.HP_RECOVERY, "체력 회복", "최대 체력의 30% 회복"))
+        }
+
+        val scene = LevelUpScene(gctx, this, choices) { selectedOption ->
+            applyUpgrade(selectedOption)
+            this.pop()
+        }
+        scene.push()
+    }
+
+    private fun applyUpgrade(option: UpgradeOption) {
+        when (option.type) {
+            UpgradeType.WEAPON_AUTO -> weapon1.upgrade()
+            UpgradeType.WEAPON_SLASH -> weapon2.upgrade()
+            UpgradeType.WEAPON_ORBIT -> weapon3.upgrade()
+            UpgradeType.STAT_MIGHT -> player.upgradeMight()
+            UpgradeType.STAT_AREA -> player.upgradeArea()
+            UpgradeType.STAT_COOLDOWN -> player.upgradeCooldown()
+            UpgradeType.HP_RECOVERY -> {
+                player.currentHp = (player.currentHp + player.maxHp * 0.3f).toInt().coerceAtMost(player.maxHp)
+            }
+        }
     }
 }

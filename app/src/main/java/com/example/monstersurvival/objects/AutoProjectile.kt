@@ -51,16 +51,28 @@ class AutoProjectile(private val gctx: GameContext) : Sprite(gctx, R.drawable.pl
 
 class WeaponAuto(private val player: Player) {
     var level = 1
-    val maxLevel = 9
+    val maxLevel = 5
     var baseDamage = 10; var baseCooldown = 1.0f; var baseSpeed = 600f; var projectileCount = 1
     private var cooldownTimer = 0f
 
-    fun upgrade() {
-        if (level >= maxLevel) return
-        level++
-        when (level) {
-            2 -> { /* TODO: 강화 수치 기입 */ }
+    fun getNextUpgradeTitle(): String {
+        return "마법 탄환 Lv.${level + 1}"
+    }
 
+    fun getNextUpgradeDesc(): String {
+        return when (level + 1) {
+            2 -> "발사체 개수 +1"
+            3 -> "피해량 +15 증가"
+            4 -> "쿨타임 10% 감소"
+            5 -> "적 관통 효과 추가 (MAX)"
+            else -> "최대 레벨입니다."
+        }
+    }
+
+    fun upgrade() {
+        if (level < maxLevel) {
+            level++
+            // 추가로 데미지를 올리거나 쿨타임을 줄이는 로직을 여기에 넣으시면 됩니다!
         }
     }
 

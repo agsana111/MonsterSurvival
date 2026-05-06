@@ -64,19 +64,37 @@ class OrbitProjectile(private val gctx: GameContext) : Sprite(gctx, R.drawable.p
 
 
 class WeaponOrbit(private val player: Player) {
-    var level = 1
-    val maxLevel = 9
+    var level = 0
+    val maxLevel = 5
     var baseDamage = 8; var baseCooldown = 3.0f; var duration = 2.5f
     var projectileCount = 2; var distance = 150f; var orbitSpeed = 3.0f
     private var cooldownTimer = 0f
 
+    fun getNextUpgradeTitle(): String {
+        return "책 Lv.${level + 1}"
+    }
+
+    fun getNextUpgradeDesc(): String {
+        return when (level + 1) {
+            1 -> "내 주변을 빙빙 도는 방어형 무기 소환"
+            2 -> "회전 속도 증가"
+            3 -> "책 개수 +1"
+            4 -> "범위 20% 증가"
+            5 -> "피해량 2배 증가 (MAX)"
+            else -> "최대 레벨입니다."
+        }
+    }
+
     fun upgrade() {
-        if (level >= maxLevel) return
-        level++
-        when (level) { 2 -> { /* TODO */ } }
+        if (level < maxLevel) {
+            level++
+            // 추가로 데미지를 올리거나 쿨타임을 줄이는 로직을 여기에 넣으시면 됩니다!
+        }
     }
 
     fun update(gctx: GameContext, world: World<MainScene.Layer>) {
+        if (level == 0) return
+
         val finalCooldown = baseCooldown * (1.0f - player.cooldownReduction).coerceAtLeast(0.1f)
         cooldownTimer -= gctx.frameTime
         if (cooldownTimer <= 0f) {
